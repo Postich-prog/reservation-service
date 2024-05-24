@@ -1,77 +1,140 @@
-openapi: 3.0.3
+openapi: "3.0.0"
 info:
-  title: Ensi Backend Skeleton (Replace me)
-  contact:
-    name: API Support
-    url: https://ensi.tech/contacts
-    email: mail@greensight.ru
   version: 1.0.0
-  description: Ensi Backend Skeleton Description (Replace me)
+  title: Reservation
+  description: reservation service for restaurants
+  license:
+    name: MIT
 servers:
-  - url: /api/v1
-tags:
-  - name: examples
-    description: Тэг-пример
+  - url: https://petstore.swagger.io/v1
 paths:
-  /examples/{id}:
+  /restaurants:
     get:
+      summary: List all restaurants
+      operationId: listRestaurants
       tags:
-        - examples
-      operationId: getExample
-      x-lg-handler: 'App\Http\ApiV1\Modules\Foos\Controllers\FoosController@get'
-      x-lg-route-name: 'getExample'
-      x-lg-skip-request-generation: true
-      summary: Получение объекта типа Example
-      description: Получение объекта типа Example
+        - restaurants
       parameters:
-        - $ref: '#/components/parameters/PathId'
-        - $ref: '#/components/parameters/QueryInclude'
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            format: int32
       responses:
-        #"200":
-          #description: Успешный ответ
-          # content:
-          #  application/json:
-          #    schema:
-          #      $ref: './customers.yaml#/CustomerResponse'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "500":
-          $ref: '#/components/responses/ServerError'
+        '200':
+          description: A paged array of restaurants
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurants"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /restaurants/{restaurantId}:
+    get:
+      summary: Info for a specific rest
+      operationId: showRestaurantById
+      tags:
+        - restaurants
+      parameters:
+        - name: restaurantId
+          in: path
+          required: true
+          description: The id of the restaurant to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurant"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /reservation:
+    post:
+      summary: Create a reservation in restaurant
+      operationId: createReservation
+      tags:
+        - reservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+        required: true
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
-  parameters:
-    QueryInclude:
-      $ref: './common_parameters.yaml#/QueryInclude'
-    PathId:
-      $ref: './common_parameters.yaml#/PathId'
   schemas:
-    EmptyDataResponse:
+    Restaurant:
       type: object
       properties:
-        data:
-          type: object
-          nullable: true
-        meta:
-          type: object
+        restaurantId:
+          type: integer
+          format: int64
+        description:
+          type: string
+    Restaurants:
+      type: array
+      maxItems: 100
+      items:
+        $ref: "#/components/schemas/Restaurants"
+    Pet:
+      type: object
       required:
-          - data
-    PaginationTypeEnum:
-      $ref: './common_schemas.yaml#/PaginationTypeEnum'
-  responses:
-    BadRequest:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: './errors.yaml#/ErrorResponse'
-    NotFound:
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            $ref: './errors.yaml#/ErrorResponse'
-    ServerError:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: './errors.yaml#/ErrorResponse'
+        - restaurantId
+        - guestsNum
+        - timeFrom
+        - timeTo
+      properties:
+        restaurantId:
+          type: integer
+          format: int64
+        guestsNum:
+          type: integer
+          format: int64
+        timeFrom:
+          type: string
+        timeTo:
+          type: string
+    Pets:
+      type: array
+      maxItems: 100
+      items:
+        $ref: "#/components/schemas/Pet"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
