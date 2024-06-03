@@ -1,0 +1,59 @@
+Restaurant:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: id of restaurant
+      example: 1123
+    name:
+      type: string
+      description: Restaurant name
+      example: "rrazvedka"
+    description:
+      type: string
+      description: restaurant text
+      example: "good service, i am pleased"
+    updated_at:
+      description: "Дата обновления"
+      format: date-time
+      type: string
+      example: "2024-01-01T11:57:28.000000Z"
+    created_at:
+      description: "Дата обновления"
+      format: date-time
+      type: string
+      example: "2024-01-01T11:57:28.000000Z"
+  required:
+    - id
+    - name
+    - description
+    - updated_at
+    - created_at
+
+RestaurantResponse:
+  type: object
+  properties:
+    data:
+      $ref: '#/Restaurant'
+    meta:
+      type: object
+  required:
+    - data
+
+CreateRestaurantRequest:
+  type: object
+  properties:
+    description:
+      type: string
+      description: restaurant text
+      example: "good service, i am pleased"
+    name:
+      type: string
+      description: Restaurant name
+      example: "rrazvedka"
+
+
+
+  required:
+    - name
+    - description
