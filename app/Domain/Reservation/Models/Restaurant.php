@@ -2,6 +2,7 @@
 
 namespace App\Domain\Reservation\Models;
 
+use App\Domain\Reservation\Models\Tests\Factories\RestaurantFactory;
 use Carbon\CarbonInterface;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
@@ -23,5 +24,9 @@ class Restaurant extends Model
     public function reservations(): HasMany
     {
         return $this->hasMany(Reservation::class);
+    }
+    public static function factory(): RestaurantFactory
+    {
+        return RestaurantFactory::new();
     }
 }

@@ -1,0 +1,48 @@
+RestaurantOne:
+  get:
+    tags:
+      - restaurant
+    operationId: getRestaurant
+    x-lg-handler: 'App\Http\ApiV1\Modules\Restaurant\Controllers\RestaurantController@get'
+    x-lg-skip-request-generation: true
+    summary: Получение объекта типа Restaurant
+    description: Получение объекта типа Restaurant
+    parameters:
+      - $ref: '../index.yaml#/components/parameters/PathId'
+    responses:
+      "200":
+        description: Успешный ответ
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/restaurant.yaml#/RestaurantResponse'
+      "404":
+        $ref: '../index.yaml#/components/responses/NotFound'
+      "500":
+        $ref: '../index.yaml#/components/responses/ServerError'
+
+Restaurant:
+  post:
+    tags:
+      - restaurant
+    operationId: createRestaurant
+    summary: Запрос на создание restaurant
+    description: Запрос на создание restaurant
+    x-lg-handler: 'App\Http\ApiV1\Modules\Restaurant\Controllers\RestaurantController@create'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/restaurant.yaml#/CreateRestaurantRequest'
+    responses:
+      "201":
+        description: Выполнено успешно
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/restaurant.yaml#/RestaurantResponse'
+      "400":
+        $ref: '../index.yaml#/components/responses/BadRequest'
+      "500":
+        $ref: '../index.yaml#/components/responses/ServerError'
